@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bnd-LastModified: 1607445875054
+Build-Jdk: 14.0.1
+Built-By: jerry
+Bundle-Activator: visal.CyActivator
+Bundle-ManifestVersion: 2
+Bundle-Name: VisAl
+Bundle-SymbolicName: visal
+Bundle-Version: 1
+Created-By: Apache Maven Bundle Plugin
+Import-Package: javax.swing,org.cytoscape.event;version="[3.7,4)",org.cy
+ toscape.model;version="[3.7,4)",org.cytoscape.model.events;version="[3.
+ 7,4)",org.cytoscape.service.util;version="[3.7,4)",org.cytoscape.task;v
+ ersion="[3.7,4)",org.cytoscape.view.model;version="[3.7,4)",org.cytosca
+ pe.view.presentation.property;version="[3.7,4)",org.cytoscape.work;vers
+ ion="[3.7,4)",org.osgi.framework;version="[1.8,2)"
+Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.7))"
+Tool: Bnd-3.0.0.201509101326

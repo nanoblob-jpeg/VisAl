@@ -1,0 +1,11 @@
+visal\CyActivator.class
+visal\VisAlTaskFactory.class
+visal\inducedToggleTaskFactory.class
+visal\ToggleEdgeTask.class
+visal\ToggleEdgeTaskFactory.class
+visal\UserTextInput.class
+visal\changeToggler.class
+visal\VisAlTask.class
+visal\NodeSelectionEventListener.class
+visal\DelayedVizProp.class
+visal\inducedToggleTask.class
