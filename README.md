@@ -1,5 +1,5 @@
 # VisAl
-##### An App for CytoScape that allows users to view SANA alignments
+##### An App for CytoScape that allows users to view SANA alignments(https://github.com/nmamano/SANA/tree/SANA2/src)
 
 ### Installing
 To use this in CytoScape, you first need to use IntelliJ and Maven to build the project. You can find a really good tutorial to do this through this video: https://www.youtube.com/watch?v=Y0jhySTHwN4. Then, you can load the .java file as an app inside of CytoScape. 
