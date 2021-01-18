@@ -29,6 +29,7 @@ public class VisAlTask extends AbstractTask {
     String graphTwoPath;
     String graphOnePath;
     String alignPath;
+    TaskMonitor taskMonitor;
     public VisAlTask(CyNetworkFactory cNF, CyNetworkManager cNM, CyNetworkViewManager cNVM, CyNetworkViewFactory cNVF, CyEventHelper cEH, String graphOnePath, String graphTwoPath, String alignPath){
         networkFactory = cNF;
         networkManager = cNM;
@@ -46,11 +47,19 @@ public class VisAlTask extends AbstractTask {
         graphs are all zero indexed
         this task only creates graphs, all data needed is also encoded inside of the CyNetwork created
          */
-        /*
-        TODO
-        for some reason, there are small little components not connected to the large mass
-        this is a bug i think, even though the numbers check out
-         */
+        this.taskMonitor = taskMonitor;
+
+        int numNodesGraphOne = getNumNodes(graphOnePath, taskMonitor);
+        int numNodesGraphTwo = getNumNodes(graphTwoPath, taskMonitor);
+        if(numNodesGraphOne == -1 || numNodesGraphTwo == -1) {
+            taskMonitor.showMessage(TaskMonitor.Level.ERROR, "Error occurred while reading a file");
+            return;
+        }
+        if(numNodesGraphTwo>numNodesGraphOne){
+            String temp = graphOnePath;
+            graphOnePath = graphTwoPath;
+            graphTwoPath = temp;
+        }
 
         HashMap<String, Integer> converterGraphOne = new HashMap<String, Integer>();
         HashMap<Integer, String> reverseConverterGraphOne = new HashMap<Integer, String>();
@@ -63,10 +72,10 @@ public class VisAlTask extends AbstractTask {
             }else if(fileExtension.compareTo(".el") == 0){
                 readELFile(graphOnePath, converterGraphOne, reverseConverterGraphOne,adjMatrixGraphOne);
             }else{
-                throw new Exception();
+                throw new Exception("Not valid graph file extension");
             }
         }catch(Exception e){
-            taskMonitor.showMessage(TaskMonitor.Level.ERROR, "Error occurred while reading a file");
+            taskMonitor.showMessage(TaskMonitor.Level.ERROR, e.getMessage() + "\nError occurred while reading larger graph file");
             return;
         }
 
@@ -82,10 +91,10 @@ public class VisAlTask extends AbstractTask {
             }else if(fileExtension.compareTo(".el") == 0){
                 readELFile(graphTwoPath, converterGraphTwo, reverseConverterGraphTwo,adjMatrixGraphTwo);
             }else{
-                throw new Exception();
+                throw new Exception("Not valid graph file extension");
             }
         }catch(Exception e){
-            taskMonitor.showMessage(TaskMonitor.Level.ERROR, "Error occurred while reading a file");
+            taskMonitor.showMessage(TaskMonitor.Level.ERROR, e.getMessage() + "\nError occurred while reading smaller graph file");
             return;
         }
 
@@ -95,7 +104,7 @@ public class VisAlTask extends AbstractTask {
         try {
             readAlignFile(alignPath, converterGraphOne, converterGraphTwo, comparisonTableForAlign);
         }catch(Exception e){
-            taskMonitor.showMessage(TaskMonitor.Level.ERROR, "Error occurred while reading a file");
+            taskMonitor.showMessage(TaskMonitor.Level.ERROR, "Error occurred while reading align file");
             return;
         }
         //expressed in terms of the graph 1 nodes
@@ -243,14 +252,14 @@ public class VisAlTask extends AbstractTask {
             numToName.put(i, nodeName);
         }
         int numEdges = Integer.parseInt(reader.nextLine());
-        for(int i = 0; i < numEdges; i++){
+        for (int i = 0; i < numEdges; i++) {
             String line = reader.nextLine();
-            int spaceIndex = line.indexOf(' ');
-            int a = nameToNum.get(line.substring(0, spaceIndex));
-            int b = nameToNum.get(line.substring(spaceIndex+1));
-            if(!adjMatrix.containsKey(a))
+            String[] args = line.split("\\s+");
+            int a = Integer.parseInt(args[0]) - 1;
+            int b = Integer.parseInt(args[1]) - 1;
+            if (!adjMatrix.containsKey(a))
                 adjMatrix.put(a, new ArrayList<Integer>());
-            if(!adjMatrix.containsKey(b))
+            if (!adjMatrix.containsKey(b))
                 adjMatrix.put(b, new ArrayList<Integer>());
             adjMatrix.get(a).add(b);
             adjMatrix.get(b).add(a);
@@ -291,5 +300,42 @@ public class VisAlTask extends AbstractTask {
             String[] nodes = line.split("\\s+");
             align.put(converterGraphTwo.get(nodes[0]), converterGraphOne.get(nodes[1]));
         }
+    }
+
+    private int getNumNodes(String path, TaskMonitor taskMonitor){
+        try{
+            String fileExtension = path.substring(path.length() - 3);
+            if(fileExtension.compareTo(".gw") == 0){
+                return getNumNodeFromGW(path);
+            }else if(fileExtension.compareTo(".el") == 0){
+                return getNumNodeFromELFile(path);
+            }else{
+                throw new Exception();
+            }
+        }catch(Exception e){
+            taskMonitor.showMessage(TaskMonitor.Level.ERROR, "Error occurred while reading a file");
+            return -1;
+        }
+    }
+
+    private int getNumNodeFromGW(String path) throws Exception{
+        File toRead = new File(path);
+        Scanner reader = new Scanner(toRead);
+        for(int i = 0; i < 4; i++)
+            reader.nextLine();
+        return Integer.parseInt(reader.nextLine());
+    }
+
+    private int getNumNodeFromELFile(String path) throws Exception{
+        HashSet<String> nodeSet = new HashSet<String>();
+        File toRead = new File(path);
+        Scanner reader = new Scanner(toRead);
+        while(reader.hasNextLine()){
+            String line = reader.nextLine();
+            String[] nodes = line.split("\\s+");
+            nodeSet.add(nodes[0]);
+            nodeSet.add(nodes[1]);
+        }
+        return nodeSet.size();
     }
 }
