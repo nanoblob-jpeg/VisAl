@@ -1,4 +1,4 @@
-# VisAl
+# VisAl (Visualizer for Alignments)
 ##### An App for CytoScape that allows users to view SANA alignments(https://github.com/nmamano/SANA/tree/SANA2/src)
 
 ### Installing
